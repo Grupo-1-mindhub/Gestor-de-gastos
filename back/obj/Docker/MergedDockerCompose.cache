@@ -1,0 +1,43 @@
+name: dockercompose13247078353761335974
+services:
+  app-db:
+    container_name: app-db
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: password@123456
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    networks:
+      backendNetwork: null
+    ports:
+    - mode: ingress
+      target: 1433
+      published: "8002"
+      protocol: tcp
+  backend:
+    build:
+      context: C:\Users\scree\OneDrive\Escritorio\proyectos\C#\Gestor de Gastos\back
+      dockerfile: backend/Dockerfile
+    container_name: backend
+    depends_on:
+      app-db:
+        condition: service_started
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DB_HOST: app-db
+      DB_NAME: ExpenseManagerDB
+      DB_SA_PASSWORD: password@123456
+    image: backend
+    networks:
+      backendNetwork: null
+    ports:
+    - mode: ingress
+      target: 80
+      protocol: tcp
+    - mode: ingress
+      target: 80
+      published: "8001"
+      protocol: tcp
+networks:
+  backendNetwork:
+    name: dockercompose13247078353761335974_backendNetwork
